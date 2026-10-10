@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VeloCity – Prototipo de app</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F6F4EC;--ink:#12201C;--card:#fff;--g:#0F5C4D;--y:#F5B700;--mut:#5b6b66;--frame:#0F5C4D;--jacket:#0F5C4D;--mapbg:#E6EFE9;--line:#12201C1f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101a17;--ink:#F6F4EC;--card:#1a2a25;--mut:#9db0a9;--frame:#4DB59C;--jacket:#4DB59C;--mapbg:#1e332d;--line:#F6F4EC22}}
+:root[data-theme="dark"]{--bg:#101a17;--ink:#F6F4EC;--card:#1a2a25;--mut:#9db0a9;--frame:#4DB59C;--jacket:#4DB59C;--mapbg:#1e332d;--line:#F6F4EC22}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:16px 'DM Sans',system-ui,sans-serif}
+#app{position:relative;height:100%;max-width:430px;margin:0 auto;overflow:hidden;background:var(--bg)}
+h1,h2,.d{font-family:'Bricolage Grotesque','DM Sans',sans-serif}
+.screen{position:absolute;inset:0 0 64px 0;overflow-y:auto;padding:20px;display:none}
+.screen.on{display:block;animation:in .35s ease}
+#splash{inset:0;padding:0;background:linear-gradient(180deg,#0F5C4D,#0a3f34);--ink:#F6F4EC;--frame:#F6F4EC;--jacket:#4DB59C;color:#F6F4EC;overflow:hidden}
+#splash.on{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
+.sky{position:absolute;bottom:130px;left:0;width:200%;display:flex;opacity:.22;animation:sky 14s linear infinite}
+.sky svg{width:50%;height:110px;fill:#F6F4EC}
+.hero{position:relative;width:250px;animation:bob .9s ease-in-out infinite}
+.road{position:absolute;bottom:112px;left:0;width:100%;height:10px}
+.road line{stroke:#F6F4EC;stroke-width:3;stroke-dasharray:18 22;animation:dash .5s linear infinite}
+#splash h1{margin:6px 0 0;font-size:54px;letter-spacing:-1.5px;animation:rise .7s .1s both}
+#splash h1 span{color:var(--y)}
+#splash p{margin:0;max-width:280px;line-height:1.4;animation:rise .7s .3s both}
+.btn{min-height:48px;padding:0 26px;border:0;border-radius:999px;background:var(--y);color:#12201C;font:500 17px 'DM Sans',sans-serif;cursor:pointer}
+.btn:active{transform:scale(.97)}
+#splash .btn{position:relative;margin-top:12px;animation:rise .7s .5s both}
+.bk{overflow:visible}
+.st{stroke:var(--ink);fill:none}
+.fr{stroke:var(--frame);fill:none;stroke-linecap:round;stroke-linejoin:round}
+.card{background:var(--card);border-radius:18px;padding:16px;border:1px solid var(--line);margin-bottom:14px}
+.row{display:flex;gap:10px;align-items:center}
+label{display:block;font-size:14px;color:var(--mut);margin:10px 0 4px}
+select,input[type=text]{width:100%;box-sizing:border-box;margin-bottom:4px;min-height:46px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:16px 'DM Sans',sans-serif}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:15px 'DM Sans',sans-serif;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--g);color:#F6F4EC;border-color:var(--g)}
+.price{font:800 40px 'Bricolage Grotesque',sans-serif;color:var(--g)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .price{color:var(--y)}}
+.small{font-size:13px;color:var(--mut)}
+.pop{animation:pop .4s ease both}
+#tabs{position:absolute;left:0;right:0;bottom:0;height:64px;display:none;background:var(--card);border-top:1px solid var(--line)}
+#tabs.on{display:flex}
+#tabs button{flex:1;min-height:44px;border:0;background:none;color:var(--mut);font:500 14px 'DM Sans',sans-serif;cursor:pointer}
+#tabs button[aria-current="true"]{color:var(--g);font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tabs button[aria-current="true"]{color:var(--y)}}
+.map{width:100%;border-radius:14px;background:var(--mapbg);display:block}
+.steps{display:flex;justify-content:space-between;margin-top:6px}
+.steps div{flex:1;text-align:center;font-size:12px;color:var(--mut)}
+.steps i{display:block;width:14px;height:14px;border-radius:50%;margin:0 auto 4px;background:var(--line)}
+.steps .done{color:var(--ink)}.steps .done i{background:var(--g)}
+.wrap{position:relative}
+#conf{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+#conf b{position:absolute;top:-10px;width:8px;height:12px;border-radius:2px;animation:fall 1.8s ease-in forwards}
+#done{display:none}#done.on{display:block;animation:pop .5s ease both}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+@keyframes sky{to{transform:translateX(-50%)}}
+@keyframes bob{50%{transform:translateY(-4px)}}
+@keyframes dash{to{stroke-dashoffset:-40}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes pop{from{opacity:0;transform:scale(.92)}}
+@keyframes fall{to{transform:translateY(300px) rotate(360deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<section id="splash" class="screen on" aria-label="Bienvenida">
+  <div class="sky"><svg viewBox="0 0 400 110" preserveAspectRatio="none"><path d="M0 110V60H30V35H60V70H90V45H130V80H160V30H200V65H240V50H280V85H320V40H360V60H400V110Z"/></svg><svg viewBox="0 0 400 110" preserveAspectRatio="none"><path d="M0 110V60H30V35H60V70H90V45H130V80H160V30H200V65H240V50H280V85H320V40H360V60H400V110Z"/></svg></div>
+  <svg class="road" viewBox="0 0 400 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="400" y2="5"/></svg>
+  <div class="hero" id="heroBk"></div>
+  <h1>Velo<span>City</span></h1>
+  <p>Mensajería en bicicleta para Cali. Rápida, limpia e incluyente.</p>
+  <button class="btn" id="go">Empezar</button>
+</section>
+
+<section id="pedir" class="screen" aria-label="Pedir envío">
+  <h2 style="margin:0 0 12px;font-size:28px">Pedir envío</h2>
+  <div class="card row"><div style="width:96px" id="nearBk"></div><div><b>Mensajero cercano</b><div class="small">A unos 6 min de ti (ejemplo)</div></div></div>
+  <div class="card">
+    <label for="oa">Recoger en</label>
+    <input type="text" id="oa" placeholder="Ej.: Calle 5 # 38-20, barrio Tequendama" autocomplete="street-address">
+    <label for="o" class="small">Zona de recogida</label>
+    <select id="o"></select>
+    <label for="da">Entregar en</label>
+    <input type="text" id="da" placeholder="Ej.: Carrera 100 # 11-60, barrio Ciudad Jardín" autocomplete="street-address">
+    <label for="d" class="small">Zona de entrega</label>
+    <select id="d"></select>
+    <label id="lt">Tipo de envío</label>
+    <div class="chips" role="group" aria-labelledby="lt" id="tipos"></div>
+    <label id="lu">Urgencia</label>
+    <div class="chips" role="group" aria-labelledby="lu" id="urg"></div>
+    <div class="small" style="margin-top:10px">La zona define la tarifa. En la app final se detectará sola a partir de la dirección.</div>
+    <div class="small" id="err" role="alert" style="color:#E0604F;margin-top:6px"></div>
+    <div style="margin-top:16px"><button class="btn" id="cot" style="background:var(--g);color:#F6F4EC;width:100%">Cotizar envío</button></div>
+  </div>
+  <div class="card" id="res" hidden>
+    <div class="small">Precio estimado (ilustrativo)</div>
+    <div class="price" id="pr"></div>
+    <div id="inf" class="small"></div>
+    <div style="margin-top:14px"><button class="btn" id="ped" style="width:100%">Pedir mensajero</button></div>
+  </div>
+</section>
+
+<section id="seguir" class="screen" aria-label="Seguir envío">
+  <h2 style="margin:0 0 4px;font-size:28px">Tu envío</h2>
+  <div class="small" id="sub" style="margin-bottom:10px"></div>
+  <div class="wrap">
+    <svg class="map" viewBox="0 0 340 230" role="img" aria-label="Mapa con el mensajero en ruta">
+      <path d="M0 100C80 70 150 140 340 105" stroke="#7FB2CC" stroke-width="12" fill="none"/>
+      <g fill="var(--card)" opacity=".8"><rect x="10" y="10" width="80" height="50" rx="8"/><rect x="110" y="14" width="70" height="40" rx="8"/><rect x="200" y="10" width="100" height="40" rx="8"/><rect x="190" y="140" width="110" height="60" rx="8"/><rect x="70" y="150" width="90" height="60" rx="8"/><rect x="10" y="150" width="40" height="50" rx="8"/></g>
+      <path id="route" d="M40 200L40 130L150 130L150 80L270 80L270 40L305 40" stroke="var(--line)" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path id="routeDone" stroke-dasharray="0 2000" d="M40 200L40 130L150 130L150 80L270 80L270 40L305 40" stroke="#F5B700" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="40" cy="200" r="8" fill="#0F5C4D"/><circle cx="305" cy="40" r="8" fill="#12201C" stroke="#F5B700" stroke-width="3"/>
+      <g id="mb"></g>
+    </svg>
+    <div id="conf"></div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="small">Estado</div>
+    <div class="d" style="font-size:26px;font-weight:800" id="eta"></div>
+    <div class="steps" id="steps"><div><i></i>Asignado</div><div><i></i>Recogido</div><div><i></i>En camino</div><div><i></i>Entregado</div></div>
+  </div>
+  <div class="card" id="done">
+    <b>Entrega completada</b>
+    <div class="price" style="margin-top:6px"><span id="co2">0</span> g</div>
+    <div class="small">de CO₂ evitados en este envío (valor ilustrativo)</div>
+    <div style="margin-top:12px"><button class="btn" id="otro" style="width:100%">Pedir otro envío</button></div>
+  </div>
+</section>
+
+<nav id="tabs" aria-label="Navegación">
+  <button data-go="pedir" aria-current="true">Pedir</button>
+  <button data-go="seguir">Seguir</button>
+</nav>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const rigs=[];
+
+function bk(attr){
+  const w=c=>`<g class="wh" data-c="${c}"><circle class="st" cx="${c}" cy="58" r="18" stroke-width="3.5"/><path class="st" d="M${c-15} 58H${c+15}M${c} 43V73M${c-10.6} 47.4L${c+10.6} 68.6M${c-10.6} 68.6L${c+10.6} 47.4" stroke-width="1.2"/></g>`;
+  return `<svg class="bk" ${attr||'width="100%"'} viewBox="0 0 120 80" aria-hidden="true">
+<path class="scarf" fill="none" stroke="#F5B700" stroke-width="3.5" stroke-linecap="round"/>
+${w(24)}${w(96)}
+<path class="fr" stroke-width="3.5" d="M24 58L54 58L46 34L84 34L96 58M54 58L84 34M84 34L86 27M80 27H92M41 33H51M26 58L30 30"/>
+<rect x="18" y="8" width="24" height="21" rx="3" fill="#F5B700" stroke="#12201C" stroke-width="2"/>
+<path d="M24 14L30 24L36 14" fill="none" stroke="#0F5C4D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path class="leg b" fill="none" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--ink);opacity:.5"/>
+<path class="crank" fill="none" stroke-width="2" style="stroke:var(--ink)"/>
+<path d="M46 32L64 12" stroke-width="10" stroke-linecap="round" fill="none" style="stroke:var(--jacket)"/>
+<circle cx="71" cy="5" r="6" fill="#F1C9A0"/><path d="M63.5 4A7.5 7.5 0 0 1 78.5 4Z" fill="#F5B700"/><circle cx="74" cy="6" r="1" fill="#12201C"/>
+<path d="M64 13L76 22L86 28" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none" style="stroke:var(--jacket)"/>
+<path class="leg a" fill="none" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--ink)"/>
+</svg>`;
+}
+function mount(el,attr){el.innerHTML=bk(attr);const s=el.querySelector('svg');rigs.push({s,a:s.querySelector('.leg.a'),b:s.querySelector('.leg.b'),cr:s.querySelector('.crank'),wh:[...s.querySelectorAll('.wh')],sc:s.querySelector('.scarf'),run:true,scr:s.closest('.screen')});return rigs[rigs.length-1]}
+const H=[46,32],BB=[54,58],L1=24,L2=26,CR=9;
+function leg(a){
+  const fx=BB[0]+CR*Math.cos(a),fy=BB[1]+CR*Math.sin(a),dx=fx-H[0],dy=fy-H[1];
+  let d=Math.min(Math.hypot(dx,dy),L1+L2-.1);const ux=dx/d,uy=dy/d,aa=(L1*L1-L2*L2+d*d)/(2*d),hh=Math.sqrt(Math.max(L1*L1-aa*aa,0));
+  return{fx,fy,kx:H[0]+aa*ux+hh*uy,ky:H[1]+aa*uy-hh*ux};
+}
+function pose(r,t){
+  const a=t*6,p=leg(a),q=leg(a+Math.PI),f=l=>`M46 32L${l.kx} ${l.ky}L${l.fx} ${l.fy}M${l.fx-4} ${l.fy}H${l.fx+4}`;
+  r.a.setAttribute('d',f(p));r.b.setAttribute('d',f(q));
+  r.cr.setAttribute('d',`M54 58L${p.fx} ${p.fy}M54 58L${q.fx} ${q.fy}`);
+  r.wh.forEach(g=>g.setAttribute('transform',`rotate(${t*300} ${g.dataset.c} 58)`));
+  r.sc.setAttribute('d',`M62 10Q50 ${9+4*Math.sin(t*10)} 36 ${12+6*Math.sin(t*10+1)}`);
+}
+
+// --- Montaje de personajes ---
+mount($('#heroBk'));
+mount($('#nearBk'));
+const mapRig=mount($('#mb'),'x="-28" y="-34" width="56" height="37"');
+// el mapa es SVG: reinsertar como grupo anidado
+(function(){const g=$('#mb');g.innerHTML=bk('x="-28" y="-34" width="56" height="37"');const s=g.querySelector('svg');Object.assign(mapRig,{s,a:s.querySelector('.leg.a'),b:s.querySelector('.leg.b'),cr:s.querySelector('.crank'),wh:[...s.querySelectorAll('.wh')],sc:s.querySelector('.scarf'),scr:$('#seguir')})})();
+
+// --- Datos del formulario ---
+const ZONAS={'Centro':1,'Granada':1,'San Antonio':1,'Oriente (Juanchito)':2,'Sur (Ciudad Jardín)':3};
+['o','d'].forEach((id,i)=>{$('#'+id).innerHTML=Object.keys(ZONAS).map((z,j)=>`<option${j===(i?1:0)?' selected':''}>${z}</option>`).join('')});
+let tipo='Documento',urg='Estándar';
+function chips(box,list,get,set){
+  $(box).innerHTML=list.map(t=>`<button class="chip" aria-pressed="${t===get()}">${t}</button>`).join('');
+  $$(box+' .chip').forEach(b=>b.onclick=()=>{set(b.textContent);$$(box+' .chip').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+}
+chips('#tipos',['Documento','Paquete pequeño','Paquete mediano'],()=>tipo,v=>tipo=v);
+chips('#urg',['Estándar','Express'],()=>urg,v=>urg=v);
+const COP=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
+let quote={eta:9};
+$('#cot').onclick=()=>{
+  const bad=['oa','da'].filter(i=>!$('#'+i).value.trim());
+  $('#err').textContent=bad.length?'Escribe la dirección de recogida y la de entrega.':'';
+  if(bad.length){$('#'+bad[0]).focus();return}
+  const z=1+Math.abs(ZONAS[$('#o').value]-ZONAS[$('#d').value]),m=urg==='Express'?1.5:1;
+  const price=Math.round((8000+(z-1)*2500)*m/100)*100;
+  quote.eta=Math.round((8+7*(z-1))*(urg==='Express'?.7:1));
+  $('#pr').textContent=COP(price);
+  $('#inf').textContent=`${tipo} · ${urg} · ${z} ${z>1?'zonas':'zona'} · llegada en unos ${quote.eta} min`;
+  const r=$('#res');r.hidden=false;r.classList.remove('pop');void r.offsetWidth;r.classList.add('pop');
+  r.scrollIntoView({behavior:RM?'auto':'smooth',block:'nearest'});
+};
+
+// --- Navegación ---
+function show(id){
+  $$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  $('#tabs').classList.toggle('on',id!=='splash');
+  $$('#tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===id));
+  if(id==='seguir'&&!trip.on&&!trip.done)start();
+}
+$('#go').onclick=()=>show('pedir');
+$$('#tabs button').forEach(b=>b.onclick=()=>show(b.dataset.go));
+$('#ped').onclick=()=>{start();show('seguir')};
+$('#otro').onclick=()=>{trip.done=false;trip.on=false;show('pedir')};
+
+// --- Viaje simulado ---
+const route=$('#route'),len=route.getTotalLength(),DUR=24;
+const trip={on:false,done:false,p:0,dir:1};
+function start(){
+  Object.assign(trip,{on:true,done:false,p:0,dir:1});
+  mapRig.run=true;$('#done').classList.remove('on');$('#conf').innerHTML='';$('#co2').textContent='0';
+  $('#sub').textContent=`${$('#oa').value.trim()||$('#o').value} → ${$('#da').value.trim()||$('#d').value} · ${tipo} · ${urg}`;
+}
+function update(dt){
+  if(!trip.on)return;
+  trip.p=Math.min(1,trip.p+dt/DUR);
+  const L=trip.p*len,pt=route.getPointAtLength(L),nx=route.getPointAtLength(Math.min(L+3,len));
+  if(nx.x-pt.x>0.5)trip.dir=1;else if(nx.x-pt.x<-0.5)trip.dir=-1;
+  $('#mb').setAttribute('transform',`translate(${pt.x} ${pt.y}) scale(${trip.dir} 1)`);
+  $('#routeDone').setAttribute('stroke-dasharray',`${L} ${len}`);
+  const p=trip.p,mins=Math.max(0,Math.ceil((1-p)*quote.eta));
+  $('#eta').textContent=p>=1?'Entregado':`Llega en ${mins} min`;
+  const st=[true,p>.12,p>.2,p>=1];$$('#steps div').forEach((d,i)=>d.classList.toggle('done',st[i]));
+  if(p>=1){trip.on=false;trip.done=true;mapRig.run=false;celebrate()}
+}
+function celebrate(){
+  const c=$('#conf'),cols=['#F5B700','#0F5C4D','#F6F4EC','#4DB59C'];
+  c.innerHTML=Array.from({length:26},(_,i)=>`<b style="left:${(i*37)%100}%;background:${cols[i%4]};animation-delay:${(i%9)*.08}s"></b>`).join('');
+  $('#done').classList.add('on');
+  const t0=performance.now();(function n(t){const k=Math.min(1,(t-t0)/1200);$('#co2').textContent=Math.round(180*k);if(k<1)requestAnimationFrame(n)})(t0);
+}
+
+// --- Bucle de animación ---
+if(RM)rigs.forEach(r=>pose(r,.8));
+let last=0;
+function loop(ts){
+  const t=ts/1000,dt=Math.min(.1,t-last);last=t;
+  if(!RM)rigs.forEach(r=>{if(r.run&&r.scr&&r.scr.classList.contains('on'))pose(r,t)});
+  update(dt);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
