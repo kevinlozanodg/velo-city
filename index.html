@@ -56,6 +56,12 @@ select,input[type=text]{width:100%;box-sizing:border-box;margin-bottom:4px;min-h
 #conf{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 #conf b{position:absolute;top:-10px;width:8px;height:12px;border-radius:2px;animation:fall 1.8s ease-in forwards}
 #done{display:none}#done.on{display:block;animation:pop .5s ease both}
+:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+.av{width:44px;height:44px;border-radius:50%;background:var(--y);color:#12201C;display:grid;place-items:center;font:800 20px 'Bricolage Grotesque',sans-serif;flex:none}
+.big{font:800 56px/1 'Bricolage Grotesque',sans-serif;color:var(--frame);margin:20px 0 4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.grid2 div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--mut);font-size:14px}
+.grid2 b{display:block;font:800 30px 'Bricolage Grotesque',sans-serif;color:var(--ink)}
 @keyframes in{from{opacity:0;transform:translateY(10px)}}
 @keyframes sky{to{transform:translateX(-50%)}}
 @keyframes bob{50%{transform:translateY(-4px)}}
@@ -79,6 +85,7 @@ select,input[type=text]{width:100%;box-sizing:border-box;margin-bottom:4px;min-h
 </section>
 
 <section id="pedir" class="screen" aria-label="Pedir envío">
+  <div class="row" style="margin-bottom:8px"><svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="#F5B700" stroke-width="6"/><path d="M19 22L32 45L45 22" fill="none" style="stroke:var(--frame)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg><b class="d" style="font-size:22px;color:var(--frame)">VeloCity</b></div>
   <h2 style="margin:0 0 12px;font-size:28px">Pedir envío</h2>
   <div class="card row"><div style="width:96px" id="nearBk"></div><div><b>Mensajero cercano</b><div class="small">A unos 6 min de ti (ejemplo)</div></div></div>
   <div class="card">
@@ -113,29 +120,41 @@ select,input[type=text]{width:100%;box-sizing:border-box;margin-bottom:4px;min-h
     <svg class="map" viewBox="0 0 340 230" role="img" aria-label="Mapa con el mensajero en ruta">
       <path d="M0 100C80 70 150 140 340 105" stroke="#7FB2CC" stroke-width="12" fill="none"/>
       <g fill="var(--card)" opacity=".8"><rect x="10" y="10" width="80" height="50" rx="8"/><rect x="110" y="14" width="70" height="40" rx="8"/><rect x="200" y="10" width="100" height="40" rx="8"/><rect x="190" y="140" width="110" height="60" rx="8"/><rect x="70" y="150" width="90" height="60" rx="8"/><rect x="10" y="150" width="40" height="50" rx="8"/></g>
-      <path id="route" d="M40 200L40 130L150 130L150 80L270 80L270 40L305 40" stroke="var(--line)" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path id="routeDone" stroke-dasharray="0 2000" d="M40 200L40 130L150 130L150 80L270 80L270 40L305 40" stroke="#F5B700" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="40" cy="200" r="8" fill="#0F5C4D"/><circle cx="305" cy="40" r="8" fill="#12201C" stroke="#F5B700" stroke-width="3"/>
+      <path id="route" d="M40 200L305 40" stroke="var(--line)" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path id="routeDone" stroke-dasharray="0 2000" d="M40 200L305 40" stroke="#F5B700" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <g id="zl"></g><circle id="pa" cx="40" cy="200" r="8" fill="#0F5C4D"/><circle id="pb" cx="305" cy="40" r="8" fill="#12201C" stroke="#F5B700" stroke-width="3"/>
       <g id="mb"></g>
     </svg>
     <div id="conf"></div>
   </div>
   <div class="card" style="margin-top:14px">
+    <div class="row" style="margin-bottom:12px"><div class="av" aria-hidden="true">C</div><div style="flex:1"><b>Camila R.</b><div class="small">Tu mensajera · 4,9 ★ · 312 entregas (ejemplo)</div></div><div style="text-align:right"><div class="small">Código</div><b class="d" style="font-size:22px">4827</b></div></div>
     <div class="small">Estado</div>
     <div class="d" style="font-size:26px;font-weight:800" id="eta"></div>
     <div class="steps" id="steps"><div><i></i>Asignado</div><div><i></i>Recogido</div><div><i></i>En camino</div><div><i></i>Entregado</div></div>
   </div>
   <div class="card" id="done">
-    <b>Entrega completada</b>
+    <b>Entrega confirmada con el código 4827</b>
     <div class="price" style="margin-top:6px"><span id="co2">0</span> g</div>
     <div class="small">de CO₂ evitados en este envío (valor ilustrativo)</div>
     <div style="margin-top:12px"><button class="btn" id="otro" style="width:100%">Pedir otro envío</button></div>
   </div>
 </section>
 
+<section id="impacto" class="screen" aria-label="Tu impacto">
+  <h2 style="margin:0 0 4px;font-size:28px">Tu impacto</h2>
+  <div class="small">Suma de tus envíos en esta sesión (valores ilustrativos)</div>
+  <div class="big"><span id="imC">0</span> g</div>
+  <div>de CO₂ evitados al entregar en bici</div>
+  <div class="grid2"><div><b id="imN">0</b>envíos</div><div><b id="imK">0</b>km en bici</div></div>
+  <p id="imE" class="small">Aún no tienes entregas. Pide un envío para empezar a sumar.</p>
+  <button class="btn" id="imGo" style="width:100%">Pedir un envío</button>
+</section>
+
 <nav id="tabs" aria-label="Navegación">
   <button data-go="pedir" aria-current="true">Pedir</button>
   <button data-go="seguir">Seguir</button>
+  <button data-go="impacto">Impacto</button>
 </nav>
 </div>
 
@@ -213,17 +232,31 @@ function show(id){
   $('#tabs').classList.toggle('on',id!=='splash');
   $$('#tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===id));
   if(id==='seguir'&&!trip.on&&!trip.done)start();
+  if(id==='impacto')renderImpact();
 }
 $('#go').onclick=()=>show('pedir');
 $$('#tabs button').forEach(b=>b.onclick=()=>show(b.dataset.go));
 $('#ped').onclick=()=>{start();show('seguir')};
 $('#otro').onclick=()=>{trip.done=false;trip.on=false;show('pedir')};
+$('#imGo').onclick=()=>show('pedir');
 
 // --- Viaje simulado ---
-const route=$('#route'),len=route.getTotalLength(),DUR=24;
-const trip={on:false,done:false,p:0,dir:1};
+const route=$('#route'),DUR=24;let len=route.getTotalLength();
+const ZP={'Centro':[150,125],'Granada':[110,60],'San Antonio':[75,135],'Oriente (Juanchito)':[265,110],'Sur (Ciudad Jardín)':[190,195]};
+$('#zl').innerHTML=Object.entries(ZP).map(([n,[x,y]])=>`<circle cx="${x}" cy="${y}" r="3" fill="var(--mut)" opacity=".5"/><text x="${x+6}" y="${y+14}" font-size="10" fill="var(--mut)">${n.split(' (')[0]}</text>`).join('');
+function drawRoute(){
+  const A=$('#o').value,B=$('#d').value,same=A===B,a=ZP[A],b=ZP[B];
+  const sx=a[0]+(same?-30:-8),sy=a[1]+(same?24:8),ex=b[0]+(same?30:8),ey=b[1]+(same?-24:-8),my=Math.round((sy+ey)/2);
+  const d=`M${sx} ${sy}V${my}H${ex}V${ey}`;
+  route.setAttribute('d',d);$('#routeDone').setAttribute('d',d);len=route.getTotalLength();
+  $('#pa').setAttribute('cx',sx);$('#pa').setAttribute('cy',sy);$('#pb').setAttribute('cx',ex);$('#pb').setAttribute('cy',ey);
+  trip.km=Math.max(1.5,Math.round(len/28.3*10)/10);trip.co2=Math.round(trip.km*60);
+}
+const tot={n:0,km:0,co:0};
+function renderImpact(){$('#imN').textContent=tot.n;$('#imK').textContent=tot.km.toFixed(1).replace('.',',');$('#imC').textContent=tot.co;$('#imE').hidden=tot.n>0}
+const trip={on:false,done:false,p:0,dir:1,km:3,co2:180};
 function start(){
-  Object.assign(trip,{on:true,done:false,p:0,dir:1});
+  Object.assign(trip,{on:true,done:false,p:0,dir:1});drawRoute();
   mapRig.run=true;$('#done').classList.remove('on');$('#conf').innerHTML='';$('#co2').textContent='0';
   $('#sub').textContent=`${$('#oa').value.trim()||$('#o').value} → ${$('#da').value.trim()||$('#d').value} · ${tipo} · ${urg}`;
 }
@@ -242,8 +275,8 @@ function update(dt){
 function celebrate(){
   const c=$('#conf'),cols=['#F5B700','#0F5C4D','#F6F4EC','#4DB59C'];
   c.innerHTML=Array.from({length:26},(_,i)=>`<b style="left:${(i*37)%100}%;background:${cols[i%4]};animation-delay:${(i%9)*.08}s"></b>`).join('');
-  $('#done').classList.add('on');
-  const t0=performance.now();(function n(t){const k=Math.min(1,(t-t0)/1200);$('#co2').textContent=Math.round(180*k);if(k<1)requestAnimationFrame(n)})(t0);
+  $('#done').classList.add('on');tot.n++;tot.km+=trip.km;tot.co+=trip.co2;
+  const t0=performance.now();(function n(t){const k=Math.min(1,(t-t0)/1200);$('#co2').textContent=Math.round(trip.co2*k);if(k<1)requestAnimationFrame(n)})(t0);
 }
 
 // --- Bucle de animación ---
